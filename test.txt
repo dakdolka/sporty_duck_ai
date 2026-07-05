@@ -1,0 +1,1 @@
+poetry add fastapi uvicorn aiogram sqlalchemy alembic asyncpg redis qdrant-client google-genai pydantic pydantic-settings python-dotenv apscheduler httpx loguru orjson
