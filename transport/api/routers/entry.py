@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.schemas.api import EntryRequest, EntryResponse
+from core.contracts.api import EntryRequest, EntryResponse
 from app.services import EntryService
 from core.provider import get_entry_service
 

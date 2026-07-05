@@ -1,4 +1,4 @@
-from app.schemas.pipelines import ConversationPipelineIn, ConversationPipelineOut
+from core.contracts.pipelines import ConversationPipelineIn, ConversationPipelineOut
 from infrastructure.db.repositories import UserRepository
 
 

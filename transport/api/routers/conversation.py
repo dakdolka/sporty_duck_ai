@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.schemas.api import ConversationRequest, ConversationResponse
+from core.contracts.api import ConversationRequest, ConversationResponse
 from app.services import ConversationService
 from core.provider import get_conversation_service
 

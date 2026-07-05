@@ -12,6 +12,19 @@ class TelegramSettings(BaseModel):
 class ApiSettings(BaseModel):
     url: str
 
+class DBSettings(BaseModel):
+    database: str
+    host: str
+    port: str
+    user: str
+    password: str
+    
+    @property
+    def url(self) -> str:
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+            
+    
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -21,6 +34,7 @@ class Settings(BaseSettings):
 
     telegram: TelegramSettings
     api: ApiSettings
+    db: DBSettings
 
 
 settings = Settings()

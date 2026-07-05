@@ -1,7 +1,7 @@
 from app.pipelines import ConversationPipeline
-from app.schemas.api import ConversationRequest, ConversationResponse
+from core.contracts.api import ConversationRequest, ConversationResponse
 from infrastructure.db.repositories import UserRepository
-from app.schemas.pipelines import ConversationPipelineIn, ConversationPipelineOut
+from core.contracts.pipelines import ConversationPipelineIn, ConversationPipelineOut
 
 
 class ConversationService:

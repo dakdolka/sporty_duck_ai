@@ -1,9 +1,9 @@
 from tkinter import ON
 
 from app.pipelines import OnboardingPipeline, ConversationPipeline
-from app.schemas.pipelines import OnboardingPipelineIn
+from core.contracts.pipelines import OnboardingPipelineIn
 from infrastructure.db.repositories import UserRepository
-from app.schemas.api import EntryRequest, EntryResponse
+from core.contracts.api import EntryRequest, EntryResponse
 
 
 class EntryService:

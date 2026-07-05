@@ -1,259 +1,300 @@
-# AI Companion Architecture
+# Sporty_duck_ai Architecture
 
 > Living architecture document.
-> This document describes the architectural principles of the project and should evolve together with the codebase.
+> This document describes the architectural principles, design decisions, and long-term vision of the project. It should evolve together with the codebase.
 
 ---
 
-# Project Goals
+# Vision
 
-The goal of this project is **not** to build a chatbot.
+Sporty_duck_ai is not designed to be a chatbot.
 
-The goal is to build an AI companion capable of:
+Its purpose is to become a long-term intelligent companion capable of building an increasingly accurate understanding of its user.
 
-- remembering the user;
-- learning from interactions;
-- building long-term knowledge;
-- generating hypotheses;
-- identifying gaps in knowledge;
-- adapting communication strategies over time.
+The system should gradually learn:
 
----
+* user preferences;
+* habits;
+* goals;
+* communication style;
+* long-term context;
+* personal knowledge.
 
-# Architectural Principles
-
-## 1. LLM is NOT the center of the system.
-
-The LLM is only one component.
-
-It should be replaceable without affecting the rest of the application.
-
-Today:
-- Gemini
-
-Tomorrow:
-- OpenAI
-- Ollama
-- Any local model
-
-Changing the provider should not require changes to business logic.
+The quality of the assistant is measured not only by the quality of individual responses, but by the quality of its understanding of the user.
 
 ---
 
-## 2. Single Responsibility
+# Core Principles
+
+## AI is only one component
+
+The language model is an implementation detail.
+
+Business logic must never depend on a specific provider.
+
+Current provider:
+
+* Gemini
+
+Future providers may include:
+
+* OpenAI
+* Ollama
+* Anthropic
+* Local models
+
+Replacing the provider should require changes only inside the provider implementation.
+
+---
+
+## Domain-first architecture
+
+Business logic is the core of the system.
+
+Infrastructure exists only to support it.
+
+The application should never depend directly on:
+
+* databases;
+* messaging platforms;
+* AI providers;
+* schedulers;
+* caching systems.
+
+Infrastructure depends on the application, never the other way around.
+
+---
+
+## Replaceable interfaces
+
+User interaction should not affect business logic.
+
+The assistant may be accessed through different interfaces:
+
+* Telegram
+* REST API
+* CLI
+* Discord
+* Web
+* Voice
+
+All interfaces communicate with the same application layer.
+
+---
+
+## Memory is the product
+
+Conversations are temporary.
+
+Memory is permanent.
+
+The primary objective of the system is not to answer questions, but to improve its internal model of the user.
+
+Every interaction should contribute to that model.
+
+---
+
+## Explicit responsibilities
 
 Every component has exactly one responsibility.
 
 Examples:
 
-ConversationService
-- orchestrates a conversation
+**Repository**
 
-MemoryService
-- manages memory lifecycle
+Stores and retrieves data.
 
-Repository
-- stores and retrieves data
+**Provider**
 
-Tool
-- performs one action
+Communicates with external services.
 
-AI Provider
-- communicates with the model
+**Service**
 
----
+Coordinates business scenarios.
 
-## 3. Business logic must not depend on infrastructure.
+**Pipeline**
 
-Application knows nothing about
+Executes complex workflows.
 
-- PostgreSQL
-- Redis
-- Gemini
-- Telegram
+**Worker**
 
-It communicates only through abstractions.
+Runs scheduled or background processes.
+
+**Tool**
+
+Performs one isolated action.
 
 ---
 
-## 4. Transport is replaceable.
+# Project Structure
 
-Telegram is not part of business logic.
-
-Possible transports:
-
-- Telegram
-- REST API
-- CLI
-- Discord
-- WebSocket
-
-All of them interact with the same Application layer.
-
----
-
-## 5. Memory is the core of the project.
-
-Conversation is temporary.
-
-Memory is permanent.
-
-The assistant should evolve primarily by improving its memory.
-
----
-
-# Layers
-
+```text
 project/
 
 app/
-- business logic
+    Business logic
 
 infrastructure/
-- external dependencies
-
-user_interfaces/
-- user interaction
+    External integrations
 
 transport/
-- machine interfaces
+    Machine interfaces
+
+user_interfaces/
+    Human interfaces
 
 workers/
-- background processing
+    Background processing
+```
 
 ---
 
-# Responsibilities
+# Layer Responsibilities
 
-## app/
+## app
 
-Contains all business logic.
+Contains the application's business logic.
 
-Should never know how external systems work.
+Responsible for:
+
+* services;
+* pipelines;
+* repositories interfaces;
+* domain rules;
+* orchestration.
+
+Must never depend on infrastructure implementations.
 
 ---
 
-## infrastructure/
+## infrastructure
 
-Contains implementations of external services.
+Contains implementations of external systems.
 
 Examples:
 
-- PostgreSQL
-- Redis
-- Gemini
-- Scheduler
+* PostgreSQL
+* Gemini
+* Redis
+* Schedulers
+* File storage
 
 ---
 
-## user_interfaces/
+## transport
 
-Interaction with users.
+Interfaces used by other software.
 
 Examples:
 
-- Telegram Bot
+* REST API
+* WebSocket
+* Future gRPC
+
+Responsible only for request validation and response serialization.
 
 ---
 
-## transport/
+## user_interfaces
 
-Communication with other software.
+Human-facing interfaces.
 
 Examples:
 
-- REST API
+* Telegram Bot
+
+Responsible only for translating platform events into application contracts.
 
 ---
 
-## workers/
+## workers
 
-Background jobs.
+Background processing.
 
 Examples:
 
-- memory consolidation
-- summarization
-- nightly reflection
+* memory consolidation;
+* summarization;
+* nightly reflection;
+* scheduled reminders.
+
+Workers initiate business scenarios but never contain business logic.
 
 ---
 
-# Main Flow
+# Request Flow
 
-Telegram/User
-
-↓
-
-ConversationService
+```text
+User
 
 ↓
 
-ConversationPipeline
+Transport / User Interface
 
 ↓
 
-ContextService
+Service
 
 ↓
 
-AIService
+Pipeline
 
 ↓
 
-ToolManager
+Application Services
 
 ↓
 
-MemoryService
-
-↓
-
-Repositories
+Repositories / Providers
 
 ↓
 
 Response
+```
 
 ---
 
-# Memory Model
+# Memory
 
-The project does NOT distinguish between facts and events.
+Memory is the central domain object.
+
+The system intentionally avoids prematurely separating memories into different categories.
 
 Everything is represented as a MemoryItem.
 
-A MemoryItem may represent:
+Possible examples:
 
-- an observation
-- a preference
-- a conclusion
-- temporary context
-- long-term knowledge
+* observation
+* preference
+* experience
+* conclusion
+* reminder
+* context
+* long-term knowledge
 
-The type system may evolve later.
+Classification may become more sophisticated as the project evolves.
 
 ---
 
-# Memory Origins
+# Memory Origin
 
-Every MemoryItem has an origin.
+Every memory records how it was created.
 
-Possible origins:
+Examples:
 
-- USER_MESSAGE
-- SYSTEM_INFERENCE
-- USER_CORRECTION
-- IMPORT
-- TOOL
+* USER_MESSAGE
+* SYSTEM_INFERENCE
+* USER_CORRECTION
+* TOOL
+* IMPORT
 
-This distinction is critical.
-
-User observations are considered more reliable than system-generated conclusions.
+The origin affects confidence and future reasoning.
 
 ---
 
 # Memory Lifecycle
 
+```text
 Conversation
 
 ↓
@@ -262,15 +303,15 @@ Memory Extraction
 
 ↓
 
-Memory Consolidation
+Consolidation
 
 ↓
 
-Inference Generation
+Inference
 
 ↓
 
-Knowledge Gap Detection
+Gap Detection
 
 ↓
 
@@ -279,142 +320,119 @@ Question Generation
 ↓
 
 Memory Update
+```
+
+Memory is continuously refined rather than simply accumulated.
 
 ---
 
 # Inference
 
-The system is allowed to generate its own conclusions.
+The assistant is allowed to generate hypotheses.
 
-Generated conclusions are NOT facts.
+Hypotheses are never treated as facts.
 
-They must always be distinguishable from user-provided information.
+Generated knowledge must always remain distinguishable from user-provided information.
 
-Future inference quality should improve over time.
+Confidence should evolve over time.
 
 ---
 
 # Knowledge Gaps
 
-The assistant should continuously identify:
+Instead of pretending to know, the assistant should actively identify:
 
-- missing information
-- contradictions
-- uncertainty
+* uncertainty;
+* contradictions;
+* missing information;
+* incomplete understanding.
 
-Instead of guessing, it should ask the user.
+Whenever appropriate, it should ask clarifying questions.
 
 ---
 
-# Tools Philosophy
+# Tools
 
-LLM does not modify the database directly.
+The LLM never performs actions directly.
 
-LLM expresses intentions.
+Instead, it expresses intentions.
 
 Examples:
 
-RememberMemory
+* RememberMemory
+* AskUser
+* CreateReminder
+* CreateTask
 
-AskUser
-
-CreateReminder
-
-CreateTask
-
-ToolManager decides how those intentions are executed.
+The application decides whether and how those intentions are executed.
 
 ---
 
 # Repository Philosophy
 
-Repositories know only storage.
+Repositories are responsible only for persistence.
 
 They never contain business logic.
 
 ---
 
-# Services Philosophy
+# Service Philosophy
 
-Services coordinate business processes.
+Services coordinate business scenarios.
 
-They never communicate directly with databases.
-
-They use repositories.
+They prepare data, select pipelines, and orchestrate application components.
 
 ---
 
-# Pipelines Philosophy
+# Pipeline Philosophy
 
-Complex workflows should live in pipelines.
+Pipelines implement complex workflows.
 
-Services should stay thin.
-
----
-
-# Long-Term Roadmap
-
-Stage 1
-
-Conversation
-Memory
-
-Stage 2
-
-Inference Engine
-
-Knowledge Gap Analyzer
-
-Stage 3
-
-Strategies
-
-Decision Engine
-
-Prediction Engine
-
-Stage 4
-
-Self-learning loop
-
-Confidence recalculation
-
-Memory evolution
-
-Adaptive communication
+They combine multiple services into a single business process while remaining independent of transport and infrastructure.
 
 ---
 
-# Future Ideas
+# Long-Term Vision
 
-(Not implemented yet)
+## Stage 1
 
-- Strategy Engine
-- Decision Engine
-- Prediction Engine
-- Emotional State
-- Personality Model
-- Goal Tracking
-- Relationship Graph
-- Memory Graph
-- Explainable Reasoning
+* Conversations
+* Memory
+
+## Stage 2
+
+* Inference Engine
+* Knowledge Gap Detection
+
+## Stage 3
+
+* Decision Engine
+* Strategy Engine
+* Prediction Engine
+
+## Stage 4
+
+* Self-improving memory
+* Adaptive communication
+* Confidence recalculation
+* Autonomous reasoning
+
+---
 
 # Design Philosophy
 
-The assistant should not pretend to know.
+The assistant should never pretend certainty.
 
-When uncertain, it should ask.
+It should ask when uncertain.
 
-When making assumptions, it should remember that they are assumptions.
-
-Memory is not static.
-
-Memory evolves.
+It should distinguish observations from assumptions.
 
 Understanding is iterative.
 
+Memory evolves.
+
 Every conversation is an opportunity to improve the internal model of the user.
 
-The goal is not to maximize response quality.
+The ultimate objective is not to maximize response quality.
 
-The goal is to maximize understanding.
+The ultimate objective is to maximize understanding.

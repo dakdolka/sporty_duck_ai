@@ -1,4 +1,4 @@
-from app.schemas.pipelines import OnboardingPipelineIn, OnboardingPipelineOut
+from core.contracts.pipelines import OnboardingPipelineIn, OnboardingPipelineOut
 from infrastructure.db.repositories import UserRepository
 
 

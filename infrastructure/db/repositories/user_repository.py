@@ -1,4 +1,4 @@
-from app.schemas.api.entry import EntryRequest
+from core.contracts.api import EntryRequest
 
 class UserRepository:
 
