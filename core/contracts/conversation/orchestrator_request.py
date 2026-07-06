@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from contracts.shared.incoming_message import IncomingMessage
+from core.contracts.shared.incoming_message import IncomingMessage
 
 
 class ConversationOrchestratorRequest(BaseModel):

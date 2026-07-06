@@ -16,11 +16,6 @@ class User(BaseModel):
         index=True,
     )
 
-    telegram_chat_id: Mapped[int] = mapped_column(
-        BigInteger,
-        nullable=False,
-    )
-
     username: Mapped[str | None] = mapped_column(
         String(32),
         nullable=True,

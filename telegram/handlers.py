@@ -29,7 +29,7 @@ async def proceed_message(message: Message, state: FSMContext):
     )
     async with httpx.AsyncClient(base_url=settings.api.url) as client:
         response = await client.post(
-            "/message",
+            "/conversation",
             json=request.model_dump(mode="json"),
         )
         response = ConversationResponse.model_validate(response.json())
