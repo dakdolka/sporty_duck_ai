@@ -1,31 +1,32 @@
 
-from app.pipelines import OnboardingPipeline, ConversationPipeline
-from app.services import EntryService, ConversationService
+from app.pipelines import ConversationPipeline
+from app.orchestrators import ConversationOrchestrator
+from app.services import IdentityService
 from infrastructure.db.repositories import UserRepository
+
 
 
 class Container:
     def __init__(self):
         
+        
+        
         # ====repositories==== #
         self.user_repository = UserRepository()
 
         # ====piplines==== #
-        self.onboarding_pipeline = OnboardingPipeline(
-            self.user_repository
-        )
         self.conversation_pipeline = ConversationPipeline(
             self.user_repository
         )
 
         # ====services==== #
-        self.entry_service = EntryService(
-            self.user_repository,
-            self.onboarding_pipeline,
-            self.conversation_pipeline,
+        
+        self.identity_service = IdentityService(
+            self.user_repository
         )
         
-        self.conversation_service = ConversationService(
+        # ====orchestrators==== #
+        self.conversation_orchestrator = ConversationOrchestrator(
             self.conversation_pipeline,
             self.user_repository
         )

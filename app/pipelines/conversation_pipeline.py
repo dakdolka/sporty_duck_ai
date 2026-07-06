@@ -1,4 +1,4 @@
-from core.contracts.pipelines import ConversationPipelineIn, ConversationPipelineOut
+from core.contracts.conversation import ConversationPipelineIn, ConversationPipelineOut
 from infrastructure.db.repositories import UserRepository
 
 
@@ -10,4 +10,4 @@ class ConversationPipeline:
         self.user_repository = user_repository
     
     async def run(self, data: ConversationPipelineIn) -> ConversationPipelineOut:
-        return ConversationPipelineOut(llm_answer="Привет!")
+        return ConversationPipelineOut(lresponse_text="Привет!")
