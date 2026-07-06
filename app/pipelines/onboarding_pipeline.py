@@ -15,7 +15,7 @@ class OnboardingPipeline:
         data: OnboardingPipelineIn,
     ) -> OnboardingPipelineOut:
 
-        # TODO:
+        await self.user_repository.create(user=data.user)
         # создать память
         # создать conversation
         # вернуть первое сообщение

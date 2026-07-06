@@ -10,4 +10,4 @@ class ConversationPipeline:
         self.user_repository = user_repository
     
     async def run(self, data: ConversationPipelineIn) -> ConversationPipelineOut:
-        return ConversationPipelineOut(llm_answer="Привет! Привет!")
+        return ConversationPipelineOut(llm_answer="Привет!")

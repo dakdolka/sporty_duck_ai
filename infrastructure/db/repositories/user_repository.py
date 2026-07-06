@@ -1,24 +1,8 @@
-from core.contracts.api import EntryRequest
+from core.contracts.common import UserInfo
 
-class UserRepository:
+from .base_repository import BaseRepository
+from infrastructure.db.models.user import User
 
-    async def exists(self, user_id: str) -> bool:
-        """
-        Проверяет существование пользователя.
-        """
-
-        return False
-
-    async def create(self, data: EntryRequest):
-        """
-        Создает пользователя.
-        """
-
-        pass
+class UserRepository(BaseRepository[User]):
+    model = User
     
-    async def require(self, user_id: str) -> EntryRequest:
-        """
-        Возвращает пользователя или ошибку!
-        """
-
-        pass

@@ -18,7 +18,7 @@ class Data(StatesGroup):
 async def start(message: Message, state: FSMContext):
     request = EntryRequest(
         user=UserInfo(
-                id=str(message.from_user.id),
+                telegram_id=message.from_user.id,
                 username=message.from_user.username,
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
@@ -46,7 +46,7 @@ async def proceed_message(message: Message, state: FSMContext):
     await state.update_data(user_input=message.text)
     request = ConversationRequest(
         user=UserInfo(
-                id=str(message.from_user.id),
+                telegram_id=message.from_user.id,
                 username=message.from_user.username,
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,

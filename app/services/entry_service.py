@@ -1,7 +1,7 @@
 from tkinter import ON
 
 from app.pipelines import OnboardingPipeline, ConversationPipeline
-from core.contracts.pipelines import OnboardingPipelineIn
+from core.contracts.pipelines import OnboardingPipelineIn, ConversationPipelineIn
 from infrastructure.db.repositories import UserRepository
 from core.contracts.api import EntryRequest, EntryResponse
 
@@ -25,10 +25,11 @@ class EntryService:
     ) -> EntryResponse:
         
         exists = await self.user_repository.exists(
-            user_id=request.user.id,
+            user_id=request.user.telegram_id,
         )
         
-        data = OnboardingPipelineIn(user=request.user, event=request.event)
         if not exists:
+            data = OnboardingPipelineIn(user=request.user, event=request.event)
             return await self.onboarding_pipeline.run(data)
+        data = ConversationPipelineIn(user=request.user, event=request.event)
         return await self.conversation_pipeline.run(data)
